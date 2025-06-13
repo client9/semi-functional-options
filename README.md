@@ -69,6 +69,11 @@ But a simplified (and incomplete) version is:
 
 ```go
 
+// here's your private/internal configuration struct
+type config struct {
+        indent string
+}
+
 // every option needs to impliment this signature
 // so we can identify them
 type Option interface {
@@ -93,33 +98,26 @@ Note:
 
 `WithIndent` returns a `Indent(string)`.  Very clever.
 
-But given a list of Options how do you translate it back to a normal value?
+But given a list of Options how do you translate it back to a configuration struct?
  
 A simplified version of looking up an option.
 
-`GetOption(WithIndent, ...options)`
+// to turn the options back into config struct
+// use a type switch and cast.
+func collectOptions(c *config, opts []Option) {
+    for _, opt := range opts {
+        switch val := opt.(type) {
 
-```go
-func GetOption[T any](setter func(T) Option, opts ...Option) (T, bool) {
-       var zero T
-      
-       for _, opt := range opts {
-         switch a := setter(zero).type {
-            case Indent:
-                 return opt, true
-         }
-       }
-       return zero, false
+        // For each option...
+        // Explicity set the internal configuration
+        case Indent:
+            c.indent = string(val)
+   }
 }
 ```
 
-The real version has a lot more code to map these options back to a (internal) structure, so these weird types are never needed again after initial configuration.
 
-* Recall the The `setter` function is `WithIndent(bool) Indent(the type)`, i.e. mapping bool to the special type.
-* The generic GetOption function, takes a setter with a bool input and returns bool output.
-* Creates a zero object of the input (in this case `bool`)
-* Calls the setter function (`WithIndent(zero)`) to get the return type.  The setters are just data, so this has no side-effects.
-* Does a type-switch to match the custom type, and return the right value
+We replaced 
 
 
 
