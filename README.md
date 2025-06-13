@@ -102,6 +102,7 @@ But given a list of Options how do you translate it back to a configuration stru
  
 A simplified version of looking up an option.
 
+```go
 // to turn the options back into config struct
 // use a type switch and cast.
 func collectOptions(c *config, opts []Option) {
@@ -117,7 +118,7 @@ func collectOptions(c *config, opts []Option) {
 ```
 
 
-We replaced 
+We replaced the function closure with a custom type.
 
 
 
